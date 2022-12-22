@@ -1,4 +1,6 @@
 
+from cgv.cgv import CGV
 
 if __name__ == "__main__":
-    print("Hello")
+    cgv = CGV()
+    cgv.run()
