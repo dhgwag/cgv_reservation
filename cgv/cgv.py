@@ -65,7 +65,7 @@ class CGV:
         header_text = self.driver.find_element(By.CSS_SELECTOR, "div.header_content").text
 
         if "로그아웃" in header_text:
-            # self.telegram_logging("로그인 성공. 예약을 시도합니다")
+            self.telegram_logging("로그인 성공. 예약을 시도합니다")
             return True
         else:
             self.telegram_logging("로그인 실패. 재시도 해주세요")
@@ -128,8 +128,7 @@ class CGV:
         except:
             raise InvalidMovieError(f"좌석선택 클릭 오류.")
 
-
-    def find_seat(self):
+    def remove_popup(self):
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.XPATH, f"//span[text()='확인']"))
         )
@@ -138,29 +137,52 @@ class CGV:
 
         # 팝업 제거
         try:
-            cnt = 1
-            print(len(self.driver.find_elements(By.XPATH, f"//a[text()='닫기']")))
-            print(self.driver.find_elements(By.XPATH, f"//a[text()='닫기']"))
-            for item in list(reversed(self.driver.find_elements(By.XPATH, f"//a[text()='닫기']"))):
-                item = item.find_element(By.XPATH, f"//a[text()='닫기']")
-                print(f"{cnt}  {item.is_displayed()}  {item.is_enabled()}")
-                # if item.is_displayed() and item.is_enabled():
-                try:
-                    item.click()
-                except:
-                    print("error")
-                    pass
-                cnt+=1
+            self.driver.find_element(By.XPATH, f"/html/body/div[5]/div[1]/a").click()
+            self.driver.find_element(By.XPATH, f"/html/body/div[4]/div[1]/a").click()
+            self.driver.find_element(By.XPATH, f"/html/body/div[3]/div[1]/a").click()
+            self.driver.find_element(By.XPATH, f"/html/body/div[2]/div[1]/a").click()
+            self.driver.find_element(By.XPATH, f"/html/body/div[1]/div[1]/a").click()
         except:
-            raise InvalidMovieError(f"팝업 제거 오류")
+            pass
 
+    def find_seat(self):
+        # 인원 클릭
+        try:
+            self.driver.find_element(By.XPATH, f"//li[@type='adult' and @data-count='{adult}']/a").click()
+            self.driver.find_element(By.XPATH, f"//li[@type='youth' and @data-count='{youth}']/a").click()
+        except:
+            raise InvalidMovieError(f"인원 선택 오류.")
+
+        # 좌석 확인
+        for row in range(row_from, row_to+1):
+            seat_area = self.driver.find_element(By.XPATH, f"//div[@class='seats' and @id='seats_list']/div[1]/div[{row}]")
+            for col in range(column_from, column_to+1):
+                try:
+                    seat_area.find_element(By.XPATH, f"//div[@class='seat']/a/span[text()='{col}']").click()
+                    self.driver.find_element(By.XPATH, f"//a[@id='tnb_step_btn_right']").click()
+                    return True
+                except:
+                    pass
+            print(row)
+
+        self.driver.find_element(By.XPATH, f"//a[@class='btn-refresh']").click()
+        print("loop end")
+        return False
 
     def run(self):
+        refresh_cnt = 1
         self.run_driver()
         self.login()
         self.check_login()
         self.find_movie_date()
-        self.find_seat()
-        # self.refresh_search_result()
+        self.remove_popup()
+        while True:
+            if self.find_seat():
+                break
+            print(f"새로고침 {refresh_cnt}회")
+            refresh_cnt += 1
+
+        self.telegram_logging("CGV 예약 성공")
 
         # print(self.driver.page_source)
+        # print(seat_area.get_attribute('innerHTML'))
