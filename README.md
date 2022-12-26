@@ -21,24 +21,24 @@ pip install -r requirements.txt
 ## Configuration
 **Config.py를 항목에 맞춰 변경**  
 ```text
-user_id = "1234567890"          # SRT 회원번호
-user_pw = "abc1234"             # SRT 비밀번호
-dpt_stn = "동탄"                 # 출발역
-arr_stn = "동대구"               # 도착역
-dpt_date = "20221023"           # 출발일
-dpt_time = "08"                 # 출발 검색 시간 "08, 10, 12, ..."
+user_id = ""                # CGV 회원번호
+user_pw = ""                # CGV 비밀번호
 
-from_idx = 2                    # 검색했을 때 예약할 열차 순번 시작 (1부터 시작)
-to_idx = 3                      # 검색했을 때 예약할 열차 순번 끝 (1부터 시작)
-# 예를 들어, from_idx가 1, to_idx가 1이면 검색 시 제일 윗 열차만 예약 시도
+movie = '아바타-물의길'        # 영화 이름
+movie_type = 'IMAX'         # 상영관 종류
+theater_area = '서울'         # 지역
+theater = '용산아이파크몰'     # 영화관
+day = '7'                   # 날짜 (일)
+movie_time = '26:10'        # 영화 시간
+adult = '2'                 # 일반 인원
+youth = '0'                 # 청소년 인원
+row_from = 5                # 검색할 row 시작, A = 1
+row_to = 8                  # 검색할 row 끝
+column_from = 10            # 검색할 column 시작
+column_to = 20              # 검색할 column 끝
 
-adult_cnt = 1                   # 성인 숫자
-child_cnt = 0                   # 어린이 숫자
-old_cnt = 0                     # 노인 숫자
-
-business = True                 # 특실 예약 여부
-economy = True                  # 일반실 예약 여부
-reserve = True                  # 예약 대기 여부
+telegram_token = ""
+telegram_id = ""
 
 # 예약 성공 여부 텔레그램 수신 시 아래 정보 필요, 비워두면 텔레그램 무시
 telegram_token = "" #"123456789:SDBn-Kn2fdze1eEAL7fefawa1yLo0pjRAUc"

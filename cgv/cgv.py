@@ -163,10 +163,8 @@ class CGV:
                     return True
                 except:
                     pass
-            print(row)
 
         self.driver.find_element(By.XPATH, f"//a[@class='btn-refresh']").click()
-        print("loop end")
         return False
 
     def run(self):
