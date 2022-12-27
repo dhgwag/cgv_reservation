@@ -155,14 +155,21 @@ class CGV:
 
         # 좌석 확인
         for row in range(row_from, row_to+1):
-            seat_area = self.driver.find_element(By.XPATH, f"//div[@class='seats' and @id='seats_list']/div[1]/div[{row}]")
-            for col in range(column_from, column_to+1):
-                try:
-                    seat_area.find_element(By.XPATH, f"//div[@class='seat']/a/span[text()='{col}']").click()
-                    self.driver.find_element(By.XPATH, f"//a[@id='tnb_step_btn_right']").click()
-                    return True
-                except:
-                    pass
+            # seat_area = self.driver.find_element(By.XPATH, f"")
+            # print(seat_area.get_attribute('innerHTML'))
+            for elem in self.driver.find_elements(By.XPATH, f"//div[@class='seats' and @id='seats_list']/div[1]/div[{row}]/div[@class='seat_group' or @class='seat_group left']"):
+                for open_seats in elem.find_elements(By.XPATH, f"div[@class='group']"):
+                    for seat in open_seats.find_elements(By.XPATH, f"div[@class='seat']"):
+                        try:
+                            if column_from <= int(seat.find_element(By.XPATH, f"a/span[@class='no']").text) <= column_to:
+                                seat.find_element(By.XPATH, f"a").click()
+                                self.driver.find_element(By.XPATH, f"//a[@id='tnb_step_btn_right']").click()
+                                return True
+                            elif int(seat.find_element(By.XPATH, f"a/span[@class='no']").text) > column_to:
+                                break
+                        except Exception as e:
+                            # print(e)
+                            pass
 
         self.driver.find_element(By.XPATH, f"//a[@class='btn-refresh']").click()
         return False
@@ -172,15 +179,22 @@ class CGV:
         self.run_driver()
         self.login()
         self.check_login()
-        self.find_movie_date()
-        self.remove_popup()
         while True:
-            if self.find_seat():
-                break
-            print(f"새로고침 {refresh_cnt}회")
-            refresh_cnt += 1
+            try:
+                self.find_movie_date()
+                self.remove_popup()
+                while True:
+                    if self.find_seat():
+                        break
+                    print(f"새로고침 {refresh_cnt}회s")
+                    refresh_cnt += 1
 
-        self.telegram_logging("CGV 예약 성공")
+                self.telegram_logging("CGV 예약 성공")
+                break
+            except Exception as e:
+                # print(e)
+                self.driver.get('http://www.cgv.co.kr/ticket/')
+                pass
 
         # print(self.driver.page_source)
         # print(seat_area.get_attribute('innerHTML'))
