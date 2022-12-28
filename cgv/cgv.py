@@ -65,12 +65,13 @@ class CGV:
         header_text = self.driver.find_element(By.CSS_SELECTOR, "div.header_content").text
 
         if "로그아웃" in header_text:
-            self.telegram_logging("로그인 성공. 예약을 시도합니다")
+            #self.telegram_logging("로그인 성공. 예약을 시도합니다")
             return True
         else:
-            self.telegram_logging("로그인 실패. 재시도 해주세요")
-            self.driver.quit()
-            sys.exit()
+            self.login()
+            #self.telegram_logging("로그인 실패. 재시도 해주세요")
+            #self.driver.quit()
+            #sys.exit()
             return False
 
 
@@ -178,9 +179,10 @@ class CGV:
         refresh_cnt = 1
         self.run_driver()
         self.login()
-        self.check_login()
         while True:
             try:
+                if not self.check_login():
+                    continue
                 self.find_movie_date()
                 self.remove_popup()
                 while True:
@@ -193,7 +195,6 @@ class CGV:
                 break
             except Exception as e:
                 # print(e)
-                self.driver.get('http://www.cgv.co.kr/ticket/')
                 pass
 
         # print(self.driver.page_source)
